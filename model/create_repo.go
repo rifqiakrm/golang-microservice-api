@@ -11,7 +11,7 @@ type CreateRepoRequest struct {
 }
 
 type CreateRepoResponse struct {
-	Id          int          `json:"id"`
+	Id          int64          `json:"id"`
 	Name        string          `json:"name"`
 	FullName    string            `json:"full_name"`
 	Owner       RepoOwner       `json:"owner"`
@@ -26,7 +26,7 @@ type RepoOwner struct {
 }
 
 type RepoPermissions struct {
-	IsAdmin int64  `json:"admin" `
-	HasPull string `json:"push"`
-	HasPush string `json:"pull"`
+	IsAdmin bool  `json:"admin" `
+	HasPull bool `json:"push"`
+	HasPush bool `json:"pull"`
 }
