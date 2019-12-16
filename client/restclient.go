@@ -63,3 +63,26 @@ func Post(url string, body interface{}, headers http.Header) (*http.Response, er
 	response, err := client.Do(request)
 	return response, nil
 }
+
+func Get(url string, headers http.Header)  (*http.Response, error){
+	if enabledMocks{
+		mock := mocks[getMockId(http.MethodGet, url)]
+		if mock == nil{
+			return nil, errors.New("No mockup for the given request")
+		}
+		return mock.Response, mock.Err
+	}
+
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil{
+		return nil, err
+	}
+
+	request.Header = headers
+
+	client := http.Client{}
+
+	response, err := client.Do(request)
+
+	return response, nil
+}

@@ -1,11 +1,13 @@
 package services
 
 import (
+	"encoding/json"
 	"github.com/rifqiakrm/golang-microservice-api/config"
 	"github.com/rifqiakrm/golang-microservice-api/model"
 	"github.com/rifqiakrm/golang-microservice-api/model/repositories"
 	"github.com/rifqiakrm/golang-microservice-api/providers/github_provider"
 	"github.com/rifqiakrm/golang-microservice-api/utils/errors"
+	"net/http"
 	"strings"
 )
 
@@ -13,6 +15,7 @@ type RepoService struct{}
 
 type RepoServiceInterface interface {
 	CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError)
+	GetRepo() (*repositories.GetAllRepoResponse, errors.ApiError)
 }
 
 var(
@@ -52,6 +55,24 @@ func (s *RepoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 	}
 
 	return &result, nil
+}
+
+func (s *RepoService) GetRepo() (*repositories.GetAllRepoResponse, errors.ApiError)  {
+	response, err := github_provider.GetRepo(config.GithubAccessToken())
+
+	if err != nil {
+		return nil, errors.NewApiError(err.StatusCode, err.Message)
+	}
+
+	var result repositories.GetAllRepoResponse
+	bytes, _ := json.Marshal(response)
+
+	if err := json.Unmarshal(bytes, &result); err != nil{
+		return nil, errors.NewApiError(http.StatusInternalServerError, "invalid response")
+	}
+
+	return &result, nil
+
 }
 
 

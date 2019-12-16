@@ -25,3 +25,13 @@ func CreateRepo(c *gin.Context)  {
 
 	c.JSON(http.StatusCreated, result)
 }
+
+func GetRepo(c *gin.Context)  {
+	result, err := services.RepositoryService.GetRepo()
+	if err != nil{
+		c.JSON(err.GetStatus(), err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}

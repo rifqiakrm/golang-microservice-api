@@ -69,3 +69,59 @@ func TestCreateRepoNoErrorFromGithub(t *testing.T)  {
 	assert.NotNil(t, response)
 	assert.EqualValues(t, 123, response.Id)
 }
+
+func TestGetRepoErrorFromGithub(t *testing.T)  {
+	client.FlushMocks()
+	client.AddMock(client.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodGet,
+		Response: &http.Response{
+			Status:           "",
+			StatusCode: http.StatusUnauthorized,
+			Body:             ioutil.NopCloser(strings.NewReader(`{"message": "Requires authentication","documentation_url": "https://developer.github.com/v3/repos/#create"}`)),
+		},
+	})
+
+	response, err := RepositoryService.GetRepo()
+
+	assert.Nil(t, response)
+	assert.NotNil(t, err)
+	assert.EqualValues(t, http.StatusUnauthorized, err.GetStatus())
+	assert.EqualValues(t, "Requires authentication", err.GetMessage())
+}
+
+func TestGetInvalidResponseFromGithub(t *testing.T)  {
+	client.FlushMocks()
+	client.AddMock(client.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodGet,
+		Response: &http.Response{
+			Status:           "",
+			StatusCode: http.StatusUnauthorized,
+			Body:             ioutil.NopCloser(strings.NewReader(`{{"name": "asd"}}`)),
+		},
+	})
+
+	response, err := RepositoryService.GetRepo()
+
+	assert.NotNil(t, err)
+	assert.Nil(t, response)
+}
+
+func TestGetRepoNoErrorFromGithub(t *testing.T)  {
+	client.FlushMocks()
+	client.AddMock(client.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodGet,
+		Response: &http.Response{
+			Status:           "",
+			StatusCode: http.StatusOK,
+			Body:             ioutil.NopCloser(strings.NewReader(`[{"name": "asd"}]`)),
+		},
+	})
+
+	response, err := RepositoryService.GetRepo()
+
+	assert.Nil(t, err)
+	assert.NotNil(t, response)
+}
