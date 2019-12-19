@@ -8,7 +8,8 @@ import (
 )
 
 func MapUrls() {
-	router.POST("/repositories", repositories.CreateRepo)
+	router.POST("/repository", repositories.CreateRepo)
+	router.POST("/repositories", repositories.CreateRepos)
 	router.GET("/repositories", repositories.GetRepo)
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, errors.NewApiError(http.StatusNotFound,"invalid route"))
